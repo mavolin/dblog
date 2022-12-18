@@ -30,12 +30,13 @@ var (
 func NewLogger(app *cli.App) *Logger {
 	var l Logger
 
-	app.Flags = append(app.Flags, &cli.StringFlag{
-		Name:        "sentry-category",
-		Value:       "db.query",
-		Usage:       "The category to use for the breadcrumb.",
-		Destination: &l.Category,
-	},
+	app.Flags = append(app.Flags,
+		&cli.StringFlag{
+			Name:        "sentry-category",
+			Value:       "db.query",
+			Usage:       "The category to use for the breadcrumb.",
+			Destination: &l.Category,
+		},
 		&cli.BoolFlag{
 			Name:        "sentry-no-args",
 			Value:       false,

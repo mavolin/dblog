@@ -9,6 +9,8 @@ import (
 
 // I know I could've used a template, and in fact at first I did.
 // But things got confusing quickly, so this seems to be the better solution.
+// Edit: Now that I've written all the code, this isn't much better, but it
+// works and the generator is short enough that it doesn't matter.
 
 // genText generates the text for the generated file.
 func (g *Generator) genText(pkg, typeName string, ms []file.Method) (string, error) {
@@ -107,7 +109,7 @@ func (g *Generator) genText(pkg, typeName string, ms []file.Method) (string, err
 			}
 
 			// make request
-			if len(m.Returns) > 0 {
+			if len(m.Returns) > 0 { // set vars, if any
 				for j, r := range m.Returns {
 					if j > 0 {
 						b.WriteString(", ")
