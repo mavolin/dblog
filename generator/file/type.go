@@ -133,6 +133,51 @@ func (p Pointer) String() string {
 }
 
 // ============================================================================
+// Func
+// ======================================================================================
+
+type Func struct {
+	Params  []Type
+	Results []Type
+}
+
+var _ Type = Func{}
+
+func (f Func) _type() {}
+
+func (f Func) String() string {
+	var sb strings.Builder
+
+	sb.WriteString("func(")
+	for i, param := range f.Params {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(param.String())
+	}
+	sb.WriteString(") ")
+
+	if len(f.Results) == 0 {
+		return sb.String()
+	}
+
+	if len(f.Results) > 1 {
+		sb.WriteString("(")
+	}
+	for i, result := range f.Results {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(result.String())
+	}
+	if len(f.Results) > 1 {
+		sb.WriteString(")")
+	}
+
+	return sb.String()
+}
+
+// ============================================================================
 // Constructor
 // ======================================================================================
 
@@ -148,6 +193,8 @@ func NewType(t types.Type, m *ImportManager) (Type, error) {
 		return newPointerType(t, m)
 	case *types.Slice:
 		return newSliceType(t, m)
+	case *types.Signature:
+		return newFuncType(t, m)
 	default:
 		return nil, fmt.Errorf("unknown type %T", t)
 	}
@@ -182,4 +229,26 @@ func newSliceType(t *types.Slice, m *ImportManager) (a Array, err error) {
 	a.Len = -1
 	a.Elem, err = NewType(t.Elem(), m)
 	return a, err
+}
+
+func newFuncType(t *types.Signature, m *ImportManager) (f Func, err error) {
+	for i := 0; i < t.Params().Len(); i++ {
+		param := t.Params().At(i)
+		typ, err := NewType(param.Type(), m)
+		if err != nil {
+			return f, err
+		}
+		f.Params = append(f.Params, typ)
+	}
+
+	for i := 0; i < t.Results().Len(); i++ {
+		result := t.Results().At(i)
+		typ, err := NewType(result.Type(), m)
+		if err != nil {
+			return f, err
+		}
+		f.Results = append(f.Results, typ)
+	}
+
+	return f, nil
 }

@@ -47,7 +47,7 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 	var m Method
 	m.Name = f.Name()
 
-	// Func's docs say Type() always returns a *Signature
+	// Func's doc says Type() always returns a *Signature
 	sig := f.Type().(*types.Signature)
 
 	if params := sig.Params(); params != nil {
@@ -60,7 +60,7 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 				name = param.Name()
 			}
 
-			p, err := NewParam(param, name, im)
+			p, err := NewParam(name, param, im)
 			if err != nil {
 				return nil, err
 			}
@@ -83,7 +83,7 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 				name = result.Name()
 			}
 
-			r, err := NewReturn(result, name, im)
+			r, err := NewReturn(name, result, im)
 			if err != nil {
 				return nil, err
 			}
@@ -95,7 +95,7 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 	return &m, nil
 }
 
-func NewParam(v *types.Var, name string, im *ImportManager) (*Param, error) {
+func NewParam(name string, v *types.Var, im *ImportManager) (*Param, error) {
 	typ, err := NewType(v.Type(), im)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func NewParam(v *types.Var, name string, im *ImportManager) (*Param, error) {
 	return &Param{Name: name, Type: typ}, nil
 }
 
-func NewReturn(v *types.Var, name string, im *ImportManager) (*Return, error) {
+func NewReturn(name string, v *types.Var, im *ImportManager) (*Return, error) {
 	typ, err := NewType(v.Type(), im)
 	if err != nil {
 		return nil, err
