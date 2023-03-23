@@ -76,7 +76,13 @@ func (g *Generator) genFile(pkg, typeName string, ms []file.Method) (string, err
 			}
 			b.WriteString(p.Name)
 			b.WriteString(" ")
-			b.WriteString(p.Type.String())
+			//
+			if p.Variadic {
+				b.WriteString("...")
+				b.WriteString(p.Type.(file.Array).Elem.String())
+			} else {
+				b.WriteString(p.Type.String())
+			}
 		}
 		b.WriteString(") (")
 		for j, r := range m.Returns {
@@ -124,6 +130,9 @@ func (g *Generator) genFile(pkg, typeName string, ms []file.Method) (string, err
 					b.WriteString(", ")
 				}
 				b.WriteString(p.Name)
+				if p.Variadic {
+					b.WriteString("...")
+				}
 			}
 			b.WriteString(")\n\n")
 

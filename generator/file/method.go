@@ -26,6 +26,8 @@ type (
 		// Variadic indicates whether the parameter is variadic.
 		//
 		// This can only be true for the last parameter.
+		//
+		// If true, Type will be of type Array.
 		Variadic bool
 	}
 
