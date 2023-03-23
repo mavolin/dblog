@@ -1,6 +1,7 @@
 package file
 
 import (
+	"fmt"
 	"go/types"
 )
 
@@ -49,13 +50,17 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 	// Func's docs say Type() always returns a *Signature
 	sig := f.Type().(*types.Signature)
 
-	ng := make(nameGenerator)
-
 	if params := sig.Params(); params != nil {
 		m.Params = make([]Param, params.Len())
 		for i := 0; i < params.Len(); i++ {
 			param := params.At(i)
-			p, err := NewParam(param, ng, im)
+
+			name := fmt.Sprint("param", i+1)
+			if param.Name() != "" {
+				name = param.Name()
+			}
+
+			p, err := NewParam(param, name, im)
 			if err != nil {
 				return nil, err
 			}
@@ -72,7 +77,13 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 		m.Returns = make([]Return, results.Len())
 		for i := 0; i < results.Len(); i++ {
 			result := results.At(i)
-			r, err := NewReturn(result, ng, im)
+
+			name := fmt.Sprint("ret", i+1)
+			if result.Name() != "" {
+				name = result.Name()
+			}
+
+			r, err := NewReturn(result, name, im)
 			if err != nil {
 				return nil, err
 			}
@@ -84,38 +95,20 @@ func NewMethod(f *types.Func, im *ImportManager) (*Method, error) {
 	return &m, nil
 }
 
-func NewParam(v *types.Var, ng nameGenerator, im *ImportManager) (_ *Param, err error) {
-	var p Param
-
-	if v.Name() == "" {
-		p.Name = ng.generate("param")
-		p.GeneratedName = true
-	} else {
-		p.Name = v.Name()
-	}
-
-	p.Type, err = NewType(v.Type(), im)
+func NewParam(v *types.Var, name string, im *ImportManager) (*Param, error) {
+	typ, err := NewType(v.Type(), im)
 	if err != nil {
 		return nil, err
 	}
 
-	return &p, nil
+	return &Param{Name: name, Type: typ}, nil
 }
 
-func NewReturn(v *types.Var, ng nameGenerator, im *ImportManager) (_ *Return, err error) {
-	var r Return
-
-	r.Type, err = NewType(v.Type(), im)
+func NewReturn(v *types.Var, name string, im *ImportManager) (*Return, error) {
+	typ, err := NewType(v.Type(), im)
 	if err != nil {
 		return nil, err
 	}
 
-	if v.Name() == "" {
-		r.Name = ng.generate("ret")
-		r.GeneratedName = true
-	} else {
-		r.Name = v.Name()
-	}
-
-	return &r, err
+	return &Return{Name: name, Type: typ}, err
 }

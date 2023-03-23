@@ -92,7 +92,7 @@ func (g *Generator) Generate(outPath, typeName string) error {
 	}
 
 	pkg := filepath.Base(filepath.Dir(outPath))
-	contents, err := g.genText(pkg, typeName, ms)
+	contents, err := g.genFile(pkg, typeName, ms)
 	if err != nil {
 		return err
 	}

@@ -1,3 +1,5 @@
+// Package file provides types that represent a repository interface and it's
+// methods, as well as go types.
 package file
 
 import (
@@ -6,23 +8,7 @@ import (
 	"strings"
 )
 
-type nameGenerator map[string]int // map[name]nextCount
-
-func (g nameGenerator) generate(name string) string {
-	count, ok := g[name]
-	if !ok {
-		g[name] = 2
-		return fmt.Sprintf("%s%d", name, 1)
-	}
-
-	g[name] = count + 1
-	return fmt.Sprintf("%s%d", name, count)
-}
-
-// ============================================================================
-// ImportManager
-// ======================================================================================
-
+// ImportManager is a helper used to manager conflicting imports.
 type ImportManager struct {
 	// Imports is a map of import names to their paths, used to prevent
 	// collisions.

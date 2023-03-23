@@ -7,13 +7,8 @@ import (
 	"github.com/mavolin/dblog/logger"
 )
 
-// I know I could've used a template, and in fact at first I did.
-// But things got confusing quickly, so this seems to be the better solution.
-// Edit: Now that I've written all the code, this isn't much better, but it
-// works and the generator is short enough that it doesn't matter.
-
-// genText generates the text for the generated file.
-func (g *Generator) genText(pkg, typeName string, ms []file.Method) (string, error) {
+// genFile generates the text for the generated file.
+func (g *Generator) genFile(pkg, typeName string, ms []file.Method) (string, error) {
 	var b strings.Builder
 
 	// package
@@ -45,6 +40,7 @@ func (g *Generator) genText(pkg, typeName string, ms []file.Method) (string, err
 	//
 	b.WriteString("}\n\n")
 
+	// compile time check
 	b.WriteString("var _ ")
 	b.WriteString(g.ifaceName)
 	b.WriteString(" = (*")
@@ -68,7 +64,7 @@ func (g *Generator) genText(pkg, typeName string, ms []file.Method) (string, err
 
 	// methods
 	for _, m := range ms {
-		// use double __ to avoid collisions with idents following Uber's style guide
+		// use double __ to avoid collisions with global vars following Uber's style guide
 		b.WriteString("func (__w *")
 		b.WriteString(typeName)
 		b.WriteString(") ")
